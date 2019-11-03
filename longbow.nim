@@ -54,8 +54,7 @@ type
     black_pawns*: int64
     black_knights*: int64
     black_bishops*: int64
-    white_score*: int
-    black_score*: int
+    score*: int
 
 const
   NONE* = 0
@@ -560,8 +559,7 @@ method setup*(self: Longbow, players: seq[Player]) =
   self.black_pawns = self.blacks and self.pawns
   self.black_knights = self.blacks and self.knights
   self.black_bishops = self.blacks and self.bishops
-  self.white_score = 0
-  self.black_score = 0
+  self.score = 0
 
 method set_possible_moves*(self: Longbow, moves: var seq[string]) =
   var valid_moves: int64
@@ -615,13 +613,13 @@ method make_move(self: Longbow, move: string): string =
       self.whites = self.whites xor P or Q
       case self.piece[p]:
         of PAWN:
-          self.white_score += 10
+          if self.current_player_number == WHITE: self.score += 10
         else: discard
     of BLACK:
       self.blacks = self.blacks xor P or Q
       case self.piece[p]:
         of PAWN:
-          self.black_score += 10
+          if self.current_player_number == BLACK: self.score += 10
         else: discard
     else: discard
 
@@ -630,27 +628,39 @@ method make_move(self: Longbow, move: string): string =
       self.whites = self.whites xor Q
       case self.piece[q]:
         of PAWN:
-          self.black_score += 100
-          self.white_score -= 100
+          if self.current_player_number == BLACK:
+            self.score += 100
+          else:
+            self.score -= 100
         of KNIGHT:
-          self.black_score += 5
-          self.white_score -= 5
+          if self.current_player_number == BLACK:
+            self.score += 5
+          else:
+            self.score -= 5
         of BISHOP:
-          self.black_score += 10
-          self.white_score -= 10
+          if self.current_player_number == BLACK:
+            self.score += 10
+          else:
+            self.score -= 10
         else: discard
     of BLACK:
       self.blacks = self.blacks xor Q
       case self.piece[q]:
         of PAWN:
-          self.white_score += 100
-          self.black_score -= 100
+          if self.current_player_number == WHITE:
+            self.score += 100
+          else:
+            self.score -= 100
         of KNIGHT:
-          self.white_score += 5
-          self.black_score -= 5
+          if self.current_player_number == WHITE:
+            self.score += 5
+          else:
+            self.score -= 5
         of BISHOP:
-          self.white_score += 10
-          self.black_score -= 10
+          if self.current_player_number == WHITE:
+            self.score += 10
+          else:
+            self.score -= 10
         else: discard
     else: discard
 
@@ -766,20 +776,14 @@ method restore_state*(self: Longbow, state: string) =
   self.piece.piece_array(self.pawns, PAWN)
   self.piece.piece_array(self.knights, KNIGHT)
   self.piece.piece_array(self.bishops, BISHOP)
-  self.white_score = 0
-  self.black_score = 0
+  self.score = 0
 
 method scoring*(self: Longbow): float =
   if self.winner_player_number == self.current_player_number:
     return 10000.0
   if self.winner_player_number != 0:
     return -10000.0
-  case self.current_player_number:
-    of WHITE:
-      return (self.white_score - self.black_score).float
-    of BLACK:
-      return (self.black_score - self.white_score).float
-    else: discard
+  result = self.score.float
 
 proc main(depth=5, black=false) =
   var game = Longbow()
