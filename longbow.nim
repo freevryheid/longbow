@@ -666,14 +666,14 @@ method make_move(self: Longbow, move: string): string =
   for i in 0 .. 7 - count(self.white_pawns):
     result.add(" P")
   for i in 0 .. 7 - count(self.white_knights):
-    result.add(" K")
+    result.add(" N")
   for i in 0 .. 7 - count(self.white_bishops):
     result.add(" B")
   result.add("\n\tblack:")
   for i in 0 .. 7 - count(self.black_pawns):
     result.add(" p")
   for i in 0 .. 7 - count(self.black_knights):
-    result.add(" k")
+    result.add(" n")
   for i in 0 .. 7 - count(self.black_bishops):
     result.add(" b")
   result.add("\n")
