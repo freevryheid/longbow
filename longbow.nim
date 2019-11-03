@@ -725,9 +725,9 @@ method make_move(self: Longbow, move: string): string =
 method determine_winner*(self: Longbow) =
   if self.winner_player_number > 0:
     return
-  if count(rank8 and self.white_pawns) > 0:
+  if (rank8 and self.white_pawns) > 0:
     self.winner_player_number = 1
-  if count(rank1 and self.black_pawns) > 0:
+  if (rank1 and self.black_pawns) > 0:
     self.winner_player_number = 2
   if count(self.pawns) == 0:
     self.winner_player_number = STALEMATE
