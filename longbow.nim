@@ -515,16 +515,10 @@ proc seq_array*(arr: var array[64, seq[int]]; e: int64; id: int) =
     if int((e and mask) != 0) == 1: arr[id].add(i)
     mask = mask shl 1
 
-proc color_array*(arr: var array[64, int]; e: int64; color: int) =
+proc fill_array*(arr: var array[64, int]; e: int64; fill: int) =
   var mask = 1
   for a in arr.mitems:
-    if int((e and mask) != 0) == 1: a = ord(color)
-    mask = mask shl 1
-
-proc piece_array*(arr: var array[64, int]; e: int64; piece: int) =
-  var mask = 1
-  for a in arr.mitems:
-    if int((e and mask) != 0) == 1: a = ord(piece)
+    if int((e and mask) != 0) == 1: a = fill
     mask = mask shl 1
 
 proc coord*(p: int): string =
@@ -727,11 +721,11 @@ method restore_state*(self: Longbow, state: string) =
   self.black_pawns = self.blacks and self.pawns
   self.black_knights = self.blacks and self.knights
   self.black_bishops = self.blacks and self.bishops
-  self.color.color_array(self.whites, WHITE)
-  self.color.color_array(self.blacks, BLACK)
-  self.piece.piece_array(self.pawns, PAWN)
-  self.piece.piece_array(self.knights, KNIGHT)
-  self.piece.piece_array(self.bishops, BISHOP)
+  self.color.fill_array(self.whites, WHITE)
+  self.color.fill_array(self.blacks, BLACK)
+  self.piece.fill_array(self.pawns, PAWN)
+  self.piece.fill_array(self.knights, KNIGHT)
+  self.piece.fill_array(self.bishops, BISHOP)
 
 method scoring*(self: Longbow): float =
   if self.winner_player_number == self.current_player_number:
