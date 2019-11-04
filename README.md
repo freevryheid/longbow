@@ -4,7 +4,7 @@ warband chess variant
 Warbands comprise infanty (pawns), archers (bishops) and knights.
 
 These move and capture like they do in regular chess, although
-rangers can shoot through rank and file, even if occupied,
+archers can fire through rank and file, even if occupied,
 but can only and must move to their enemy kills.
 Promote infantry to win the game.
 With no infantry left, the game is a draw.
