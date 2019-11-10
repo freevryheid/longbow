@@ -728,10 +728,17 @@ method restore_state*(self: Longbow, state: string) =
   self.piece.fill_array(self.bishops, BISHOP)
 
 method scoring*(self: Longbow): float =
-  if self.winner_player_number == self.current_player_number:
+  # check for winner first
+  var winner = 0 
+  if (rank8 and self.white_pawns) > 0:
+    winner = 1
+  if (rank1 and self.black_pawns) > 0:
+    winner = 2
+  if winner == self.current_player_number:
     return 10000.0
-  if self.winner_player_number != 0:
+  if winner != 0:
     return -10000.0
+  # check for relative strategic value
   var
     white_score = count(self.white_pawns) + 2*count(self.white_knights) + 3*count(self.white_bishops)
     black_score = count(self.black_pawns) + 2*count(self.black_knights) + 3*count(self.black_bishops)
