@@ -1,7 +1,7 @@
-# longbow
-warband chess variant
+# Longbow
+Warband chess variant
 
-## game rules
+## Game rules
 
 Warbands comprise:
 
@@ -19,9 +19,11 @@ If no infantry are left, the game is a draw.
 
 Moves are made using the coordinate notation e.g. a3a4.
 
-## install and run
+White pieces are shown in uppercase (P,B,N) and black pieces in lowercase (p,b,n).
 
-To install, clone this repo and run:
+## Install and run
+
+To install, clone this repo, change to the directory and run:
 
 ```bash
 nimble build
@@ -29,7 +31,16 @@ nimble build
 
 This will install any needed libraries and build a **longbow** executable. Simply run that executable in a terminal/shell to play.
 
-## credit
+Parameters include:
+  * -h   : help
+  * -b   : play as black (default = false)
+  * -d:x : where x is depth of search (default = 5)
+
+The depth of search is measured in plies. One ply is a single play. So, one full round of play between two players is two plies.
+
+./longbox -bd:7 plays as black with a depth of 7.
+
+## Credits
 
 This code uses John Dupuy's excellent turn_based_game and negamax nim modules:
 

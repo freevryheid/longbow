@@ -1,33 +1,22 @@
 #[
 
-Longbow v0.1
+Longbow v1.0.1
 A warband chess variant
 Copyright 2019 Andre Smit
 MIT license
 
-Warbands comprise infanty (pawns), archers (bishops) and knights.
-These move and capture like they do in regular chess, although
-rangers can shoot through rank and file, even if occupied,
-but can only and must move to their enemy kills.
-Promote infantry to win the game.
-With no infantry left, the game is a draw.
+See the readme for game rules and credits.
 
-Moves are made using the coordinate notation e.g. a3a4.
+Bitboards, position and move arrays are setup with the board as follows:
 
-Position and move arrays are setup with the board as follows:
-
-63 62 61 60 59 58 57 56
-55 54 53 52 51 50 49 48
-47 46 45 44 43 42 41 40
-39 38 37 36 35 34 33 32
-31 30 29 28 27 26 25 24
-23 22 21 20 19 18 17 16
-15 14 13 12 11 10 09 08
-07 06 05 04 03 02 01 00
-
-This code uses John Dupuy's excellent turn_based_game and negamax nim modules:
-https://github.com/JohnAD/turn_based_game
-https://github.com/JohnAD/negamax
+63 62 61 60 59 58 57 56 \
+55 54 53 52 51 50 49 48 \
+47 46 45 44 43 42 41 40 \
+39 38 37 36 35 34 33 32 \
+31 30 29 28 27 26 25 24 \
+23 22 21 20 19 18 17 16 \
+15 14 13 12 11 10 09 08 \
+07 06 05 04 03 02 01 00 \
 
 ]#
 
@@ -38,7 +27,7 @@ import
   , negamax
 
 type
-  Longbow = ref object of Game
+  Longbow* = ref object of Game
     piece_char*: array[4, char]
     color*: array[64, int]
     piece*: array[64, int]
@@ -529,10 +518,10 @@ proc coord*(p: int): string =
     b = r + 49
   result = chr(a) & chr(b)
 
-proc row(c: char): int =
+proc row*(c: char): int =
   result = ord(c) - 49
 
-proc col(c: char): int =
+proc col*(c: char): int =
   result = ord(c) - 97
 
 method setup*(self: Longbow, players: seq[Player]) =
@@ -553,9 +542,8 @@ method setup*(self: Longbow, players: seq[Player]) =
   self.black_knights = self.blacks and self.knights
   self.black_bishops = self.blacks and self.bishops
 
-method set_possible_moves*(self: Longbow, moves: var seq[string]) =
+method get_possible_moves*(self: Longbow): array[64, seq[int]] =
   var valid_moves: int64
-  var arr: array[64, seq[int]]
   for i in 0 .. 63:
     case self.color[i]:
       of WHITE:
@@ -579,7 +567,10 @@ method set_possible_moves*(self: Longbow, moves: var seq[string]) =
             valid_moves = bmc[i] and self.whites
           else: continue
       else: continue
-    arr.seq_array(valid_moves, i)
+    result.seq_array(valid_moves, i)
+
+method set_possible_moves*(self: Longbow, moves: var seq[string]) =
+  var arr = self.get_possible_moves()
   for i in countdown(63, 0):
     if len(arr[i]) > 0 and self.color[i] == self.current_player_number:
       for j in arr[i]:
@@ -729,7 +720,7 @@ method restore_state*(self: Longbow, state: string) =
 
 method scoring*(self: Longbow): float =
   # check for winner first
-  var winner = 0 
+  var winner = 0
   if (rank8 and self.white_pawns) > 0:
     winner = 1
   if (rank1 and self.black_pawns) > 0:
@@ -764,7 +755,7 @@ proc main(depth=5, black=false) =
   echo "history: " & $history
 
 when isMainModule:
-  echo "\nLongbow v0.1"
+  echo "\nLongbow v1.0.1"
   echo "A warband chess variant"
   echo "Copyright 2019 Andre Smit\n"
   dispatch(main)
