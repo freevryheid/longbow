@@ -1,13 +1,13 @@
 #[
 
-Longbow v1.0.1
-A warband chess variant
+Longbow
+A warband chess variant game
 Copyright 2019 Andre Smit
 MIT license
 
 See the readme for game rules and credits.
 
-Bitboards, position and move arrays are setup with the board as follows:
+Bitboards, position and move arrays are setup with the chess board as follows:
 
 63 62 61 60 59 58 57 56 \
 55 54 53 52 51 50 49 48 \
@@ -43,6 +43,9 @@ type
     black_pawns*: int64
     black_knights*: int64
     black_bishops*: int64
+  FromTo* = tuple
+    p: int
+    q: int
 
 const
   NONE* = 0
@@ -542,7 +545,7 @@ method setup*(self: Longbow, players: seq[Player]) =
   self.black_knights = self.blacks and self.knights
   self.black_bishops = self.blacks and self.bishops
 
-method get_possible_moves*(self: Longbow): array[64, seq[int]] =
+method get_possible_moves*(self: Longbow): array[64, seq[int]] {.base.} =
   var valid_moves: int64
   for i in 0 .. 63:
     case self.color[i]:
@@ -576,7 +579,7 @@ method set_possible_moves*(self: Longbow, moves: var seq[string]) =
       for j in arr[i]:
         moves.add(coord(i) & coord(j))
 
-method make_move(self: Longbow, move: string): string =
+proc transform(move: string): FromTo =
   var
     a = move[0]
     b = move[1]
@@ -588,49 +591,56 @@ method make_move(self: Longbow, move: string): string =
     R = row(B)
     p = 63 - (7-r)*8 - c
     q = 63 - (7-R)*8 - C
+  result.p = p
+  result.q = q
+
+method apply_move*(self: Longbow; pq: FromTo) {.base.} =
+  var
+    p = pq.p
+    q = pq.q
     P = one shl p
     Q = one shl q
 
   case self.color[p]:
-    of WHITE:
-      self.whites = self.whites xor P or Q
-    of BLACK:
-      self.blacks = self.blacks xor P or Q
-    else: discard
+  of WHITE:
+    self.whites = self.whites xor P or Q
+  of BLACK:
+    self.blacks = self.blacks xor P or Q
+  else: discard
 
   case self.color[q]:
-    of WHITE:
-      self.whites = self.whites xor Q
-    of BLACK:
-      self.blacks = self.blacks xor Q
-    else: discard
+  of WHITE:
+    self.whites = self.whites xor Q
+  of BLACK:
+    self.blacks = self.blacks xor Q
+  else: discard
 
   case self.piece[p]:
-    of PAWN:
-      self.pawns = self.pawns xor P or Q
-      case self.piece[q]:
-        of KNIGHT:
-          self.knights = self.knights xor Q
-        of BISHOP:
-          self.bishops = self.bishops xor Q
-        else: discard
-    of KNIGHT:
-      self.knights = self.knights xor P or Q
-      case self.piece[q]:
-        of PAWN:
-          self.pawns = self.pawns xor Q
-        of BISHOP:
-          self.bishops = self.bishops xor Q
-        else: discard
-    of BISHOP:
-      self.bishops = self.bishops xor P or Q
-      case self.piece[q]:
-        of PAWN:
-          self.pawns = self.pawns xor Q
-        of KNIGHT:
-          self.knights = self.knights xor Q
-        else: discard
-    else: discard
+  of PAWN:
+    self.pawns = self.pawns xor P or Q
+    case self.piece[q]:
+      of KNIGHT:
+        self.knights = self.knights xor Q
+      of BISHOP:
+        self.bishops = self.bishops xor Q
+      else: discard
+  of KNIGHT:
+    self.knights = self.knights xor P or Q
+    case self.piece[q]:
+      of PAWN:
+        self.pawns = self.pawns xor Q
+      of BISHOP:
+        self.bishops = self.bishops xor Q
+      else: discard
+  of BISHOP:
+    self.bishops = self.bishops xor P or Q
+    case self.piece[q]:
+      of PAWN:
+        self.pawns = self.pawns xor Q
+      of KNIGHT:
+        self.knights = self.knights xor Q
+      else: discard
+  else: discard
 
   self.pos = self.pos xor P or Q
 
@@ -646,6 +656,9 @@ method make_move(self: Longbow, move: string): string =
   self.piece[q] = self.piece[p]
   self.piece[p] = EMPTY
 
+method make_move(self: Longbow, move: string): string =
+  var pq = transform(move)
+  self.apply_move(pq)
   result = "Captured pieces:"
   result.add("\n\twhite:")
   for i in 0 .. 7 - count(self.white_pawns):
@@ -755,7 +768,7 @@ proc main(depth=5, black=false) =
   echo "history: " & $history
 
 when isMainModule:
-  echo "\nLongbow v1.0.1"
+  echo "\nLongbow v1.1.0"
   echo "A warband chess variant"
   echo "Copyright 2019 Andre Smit\n"
   dispatch(main)
