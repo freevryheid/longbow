@@ -47,3 +47,9 @@ This code uses John Dupuy's excellent turn_based_game and negamax nim modules:
 https://github.com/JohnAD/turn_based_game
 
 https://github.com/JohnAD/negamax
+
+## guis
+ * https://github.com/freevryheid/longbow-gui
+ 
+
+
