@@ -48,7 +48,7 @@ https://github.com/JohnAD/turn_based_game
 
 https://github.com/JohnAD/negamax
 
-## guis
+## GUI's
  * https://github.com/freevryheid/longbow-gui
  
 
