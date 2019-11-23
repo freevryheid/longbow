@@ -53,8 +53,8 @@ const
   BLACK* = 2
   EMPTY* = 0
   PAWN* = 1
-  KNIGHT* = 2
-  BISHOP* = 3
+  BISHOP* = 2
+  KNIGHT* = 3
 
 template ROW*(x: untyped): untyped =
   (x shr 3)
@@ -97,9 +97,10 @@ let
   init_pawn* =
     0b0000000000000000111111110000000000000000111111110000000000000000'i64
   init_knight* =
-    0b0000000011111111000000000000000000000000000000001111111100000000'i64
-  init_bishop* =
     0b1111111100000000000000000000000000000000000000000000000011111111'i64
+  init_bishop* =
+    0b0000000011111111000000000000000000000000000000001111111100000000'i64
+
   wpm* = [  # white pawn moves
     0b0000000000000000000000000000000000000000000000000000000000000000'i64,
     0b0000000000000000000000000000000000000000000000000000000000000000'i64,
@@ -579,7 +580,7 @@ method set_possible_moves*(self: Longbow, moves: var seq[string]) =
       for j in arr[i]:
         moves.add(coord(i) & coord(j))
 
-proc transform(move: string): FromTo =
+proc transform*(move: string): FromTo =
   var
     a = move[0]
     b = move[1]
@@ -768,7 +769,7 @@ proc main(depth=5, black=false) =
   echo "history: " & $history
 
 when isMainModule:
-  echo "\nLongbow v1.1.0"
+  echo "\nLongbow v1.2.0"
   echo "A warband chess variant"
   echo "Copyright 2019 Andre Smit\n"
   dispatch(main)

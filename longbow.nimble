@@ -1,6 +1,6 @@
 # Package
 
-version       = "1.1.0"
+version       = "1.2.0"
 author        = "Andre Smit"
 description   = "Longbow: a warband chess variant game"
 license       = "MIT"
