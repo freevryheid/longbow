@@ -734,7 +734,10 @@ method restore_state*(self: Longbow, state: string) =
 
 method scoring*(self: Longbow): float =
   # check for winner first
-  var winner = 0
+  var
+    winner = 0
+    white_score = count(self.white_pawns)
+    black_score = count(self.black_pawns)
   if (rank8 and self.white_pawns) > 0:
     winner = 1
   if (rank1 and self.black_pawns) > 0:
@@ -743,10 +746,21 @@ method scoring*(self: Longbow): float =
     return 10000.0
   if winner != 0:
     return -10000.0
+
   # check for relative strategic value
-  var
-    white_score = count(self.white_pawns) + 2*count(self.white_knights) + 3*count(self.white_bishops)
-    black_score = count(self.black_pawns) + 2*count(self.black_knights) + 3*count(self.black_bishops)
+
+  # elevate importance of pawns
+  white_score = -(white_score-8)*(white_score-8)
+  black_score = -(black_score-8)*(black_score-8)
+
+  # knights
+  white_score += 2*count(self.white_knights)
+  black_score += 2*count(self.black_knights)
+
+  # bishops
+  white_score += 3*count(self.white_bishops)
+  black_score += 3*count(self.black_bishops)
+
   case self.current_player_number:
     of WHITE: return (white_score - black_score).float
     of BLACK: return (black_score - white_score).float
@@ -769,7 +783,7 @@ proc main(depth=5, black=false) =
   echo "history: " & $history
 
 when isMainModule:
-  echo "\nLongbow v1.2.0"
+  echo "\nLongbow v1.3.0"
   echo "A warband chess variant"
   echo "Copyright 2019 Andre Smit\n"
   dispatch(main)
