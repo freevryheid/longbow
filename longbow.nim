@@ -101,7 +101,7 @@ let
   init_bishop* =
     0b0000000011111111000000000000000000000000000000001111111100000000'i64
 
-  wpm* = [  # white pawn moves
+  wpm* = [ # white pawn moves
     0b0000000000000000000000000000000000000000000000000000000000000000'i64,
     0b0000000000000000000000000000000000000000000000000000000000000000'i64,
     0b0000000000000000000000000000000000000000000000000000000000000000'i64,
@@ -231,7 +231,7 @@ let
     0b0000000000000000000000000000000000000000000000000000000000000000'i64,
     0b0000000000000000000000000000000000000000000000000000000000000000'i64,
     0b0000000000000000000000000000000000000000000000000000000000000000'i64]
-  wpc* = [  # white pawn captures
+  wpc* = [ # white pawn captures
     0b0000000000000000000000000000000000000000000000000000000000000000'i64,
     0b0000000000000000000000000000000000000000000000000000000000000000'i64,
     0b0000000000000000000000000000000000000000000000000000000000000000'i64,
@@ -361,7 +361,7 @@ let
     0b0000000000000000000000000000000000000000000000000000000000000000'i64,
     0b0000000000000000000000000000000000000000000000000000000000000000'i64,
     0b0000000000000000000000000000000000000000000000000000000000000000'i64]
-  kmc* = [  # knight moves and captures
+  kmc* = [ # knight moves and captures
     0b0000000000000000000000000000000000000000000000100000010000000000'i64,
     0b0000000000000000000000000000000000000000000001010000100000000000'i64,
     0b0000000000000000000000000000000000000000000010100001000100000000'i64,
@@ -528,7 +528,7 @@ proc row*(c: char): int =
 proc col*(c: char): int =
   result = ord(c) - 97
 
-method setup*(self: Longbow, players: seq[Player]) =
+method setup*(self: Longbow; players: seq[Player]) =
   self.default_setup(players)
   self.piece_char = piece_char
   self.color = init_color
@@ -573,7 +573,7 @@ method get_possible_moves*(self: Longbow): array[64, seq[int]] {.base.} =
       else: continue
     result.seq_array(valid_moves, i)
 
-method set_possible_moves*(self: Longbow, moves: var seq[string]) =
+method set_possible_moves*(self: Longbow; moves: var seq[string]) =
   var arr = self.get_possible_moves()
   for i in countdown(63, 0):
     if len(arr[i]) > 0 and self.color[i] == self.current_player_number:
@@ -657,7 +657,7 @@ method apply_move*(self: Longbow; pq: FromTo) {.base.} =
   self.piece[q] = self.piece[p]
   self.piece[p] = EMPTY
 
-method make_move(self: Longbow, move: string): string =
+method make_move(self: Longbow; move: string): string =
   var pq = transform(move)
   self.apply_move(pq)
   result = "Captured pieces:"
@@ -712,7 +712,7 @@ method get_state*(self: Longbow): string =
   result.add(' ')
   result.add($self.bishops)
 
-method restore_state*(self: Longbow, state: string) =
+method restore_state*(self: Longbow; state: string) =
   var a = split(state)
   self.current_player_number = parseInt(a[0])
   self.whites = parseBiggestInt(a[1])
@@ -766,7 +766,7 @@ method scoring*(self: Longbow): float =
     of BLACK: return (black_score - white_score).float
     else: discard
 
-proc main(depth=5, black=false) =
+proc main(depth = 5; black = false) =
   var game = Longbow()
   if not black:
     game.setup(@[
