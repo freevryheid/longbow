@@ -34,6 +34,7 @@ This will install any needed libraries and build a **longbow** executable. Simpl
 Parameters include:
   * -h   : help
   * -b   : play as black (default = false)
+  * -f   : flip board (default = false)
   * -d:x : where x is depth of search (default = 5)
 
 The depth of search is measured in plies. One ply is a single play. So, one full round of play between two players is two plies.
