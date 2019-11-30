@@ -28,6 +28,7 @@ import
 
 type
   Longbow* = ref object of Game
+    flip*: bool
     piece_char*: array[4, char]
     color*: array[64, int]
     piece*: array[64, int]
@@ -63,7 +64,7 @@ template COL*(x: untyped): untyped =
   7 - (x and 7)
 
 let
-  piece_char* = ['.', 'P', 'N', 'B']
+  piece_char* = ['.', 'P', 'B', 'K']
   init_color* = [
     1, 1, 1, 1, 1, 1, 1, 1,
     1, 1, 1, 1, 1, 1, 1, 1,
@@ -688,16 +689,24 @@ method determine_winner*(self: Longbow) =
     self.winner_player_number = STALEMATE
 
 method status*(self: Longbow): string =
+  var j: int
   for i in countdown(63, 0):
+    if self.flip:
+      j = 63 - i
+    else:
+      j = i
     if (i + 1) mod 8 == 0:
-      result.add("\n$1 " % $(ROW(i)+1))
-    case self.color[i]:
+      result.add("\n$1 " % $(ROW(j)+1))
+    case self.color[j]:
       of NONE, WHITE:
-        result.add(" $1" % $self.piece_char[self.piece[i]])
+        result.add(" $1" % $self.piece_char[self.piece[j]])
       of BLACK:
-        result.add(" $1" % toLower($self.piece_char[self.piece[i]]))
+        result.add(" $1" % toLower($self.piece_char[self.piece[j]]))
       else: discard
-  result.add("\n\n   a b c d e f g h\n")
+  if self.flip:
+    result.add("\n\n   h g f e d c b a\n")
+  else:
+    result.add("\n\n   a b c d e f g h\n")
 
 method get_state*(self: Longbow): string =
   result = $self.current_player_number
@@ -766,8 +775,9 @@ method scoring*(self: Longbow): float =
     of BLACK: return (black_score - white_score).float
     else: discard
 
-proc main(depth = 5; black = false) =
+proc main(depth = 5; black = false; flip = false) =
   var game = Longbow()
+  game.flip = flip
   if not black:
     game.setup(@[
       Player(name: "White"),
